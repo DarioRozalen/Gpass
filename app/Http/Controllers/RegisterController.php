@@ -8,92 +8,38 @@ use App\User;
 class RegisterController extends Controller
 {
    
-    public function index()
+    public function register (Request $request)
     {
-        //
-    }
+        if (!isset($_POST['user']) or !isset($_POST['email']) or !isset($_POST['password'])) 
+        {
+            return $this->error(1, 'No puede haber campos vacíos');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
         $user = $_POST['user'];
         $email = $_POST['email'];
         $password = $_POST['password'];
 
         if (!empty($user) && !empty($email) && !empty($password))
         {
+            try
+            {
             $users = new User();
             $users->name = $user;
             $users->password = $password;
             $users->email = $email;
 
             $users->save();
-
-            return response("Register Complete");
+        }
+        catch(Exception $e)
+            {
+                return $this->error(2, $e->getMessage());
+            }
+            
+            return $this->error(200, 'Usuario registrado');
         }
         else
         {
-            return response("Los datos no son correctos");
+            return $this->error(401, 'No puede haber campos vacios');
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function show()
-    {
-        
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Song $song)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Song $song)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Song $song)
-    {
-        //
-    }
+    }  
 }

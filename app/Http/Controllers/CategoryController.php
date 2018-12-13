@@ -2,78 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use Illuminate\Http\Request;
+use \Firebase\JWT\JWT;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        //
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
-        //
+        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
-        //
+        $headers = getallheaders();
+        $token = $headers['Authorization'];
+        $key = '^fg?4xtyDXcjb5c__aXWb$J?2wn#9jBB4Wbc68d4YUDsB*ZuQ$p4b!rj';
+        $userData = JWT::decode($token, $key, array('HS256'));
+
+        if ($this->checkLogin($userData->email , $userData->password)) 
+        { 
+            $category = new Category();
+            $category->name = $request->categoryName;
+            $category->id_user = $userData->id;
+            $category->save();
+
+            //$data = ['category' => $category->categoryName];
+            return $this->success('Categoría creada', $request->categoryName);
+        }
+        else
+        {
+            return $this->error(401, "No tienes permisos");
+        }
+
+
+        
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
+    
     public function show()
     {
         
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Song $song)
+    
+    public function edit(Category $category)
     {
-        //
+        
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Song $song)
+    
+    public function update(Request $request, Category $category)
     {
-        //
+        
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Song  $song
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Song $song)
+    
+    public function destroy(Category $category)
     {
-        //
+        
     }
 }
