@@ -26,8 +26,38 @@ class Controller extends BaseController
     {
     	$json = ['message' => $message, 'data' => $data];
         $json = json_encode($json);
-        return  response($json, 200)->header('Access-Control-Allow-Origin', '*');
+        return  response($json, 200)->withHeaders([
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+          
+            ]);
+
     }
+
+    protected function checkLogin($email, $password)
+    {
+        $userSave = User::where('email', $email)->first();
+
+        $emailSave = $userSave->email;
+        $passwordSave = $userSave->password;
+
+        if($emailSave == $email && $passwordSave == $password)
+        {
+            return true;
+        }
+        return false;
+    }
+
+ //    protected function userLogged()
+	// {
+	// 	if ($this->isUserLogged) 
+	// 	{
+	// 		$userLogged = User::where('email', $userSave->email )->first();
+	// 	}
+	// 	return $userLogged;
+	// }
+
+	
 
 	// protected function isUserLogged()
  //    {
@@ -60,27 +90,6 @@ class Controller extends BaseController
 	//     return true;
  //    }
 
-    protected function userLogged()
-	{
-		if ($this->isUserLogged) 
-		{
-			$userLogged = User::where('email', $userSave->email )->first();
-		}
-		return $userLogged;
-	}
-
-	protected function checkLogin($email, $password)
-    {
-        $userSave = User::where('email', $email)->first();
-
-        $emailSave = $userSave->email;
-        $passwordSave = $userSave->password;
-
-        if($emailSave == $email && $passwordSave == $password)
-        {
-            return true;
-        }
-        return false;
-    }
+    
 }   
 

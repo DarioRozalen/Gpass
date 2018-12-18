@@ -25,7 +25,7 @@ class CategoryController extends Controller
         $headers = getallheaders();
         $token = $headers['Authorization'];
         $key = '^fg?4xtyDXcjb5c__aXWb$J?2wn#9jBB4Wbc68d4YUDsB*ZuQ$p4b!rj';
-        $userData = JWT::decode($token, $key, array('HS256'));
+        $userData = JWT::decode($token, $key, array('HS256'));//Tipo de encriptacion que usamos
 
         if ($this->checkLogin($userData->email , $userData->password)) 
         { 
@@ -34,16 +34,12 @@ class CategoryController extends Controller
             $category->id_user = $userData->id;
             $category->save();
 
-            //$data = ['category' => $category->categoryName];
-            return $this->success('Categoría creada', $request->categoryName);
+            return $this->success('Categoria creada', $request->categoryName);
         }
         else
         {
             return $this->error(401, "No tienes permisos");
-        }
-
-
-        
+        }  
     }
 
     
