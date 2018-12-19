@@ -5,7 +5,7 @@
 
 	<title>Categories</title>
 </head>
-<body>
+<body style="background-color: green">
 	<h1>Create Category</h1>
 	<h2>Name</h2>
 	<input id="nameCategory" type="name" name="name">
@@ -17,14 +17,17 @@
 </body>
 
 <script type="text/javascript">
+
+
+
 	function categoryCreation()
 	{
 		var categoryName = document.getElementById("nameCategory").value;
-		var authorization = document.getElementById("token").value;
-  		$.ajax({
+		var authorization = sessionStorage.getItem('token');
+		$.ajax({
 			method: "POST",
 			url: "http://localhost:8888/Gpass/public/index.php/api/category",
-			data: { 
+			data:{ 
 				categoryName: categoryName 	
 			},
 			headers:{
