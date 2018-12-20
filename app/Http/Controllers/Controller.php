@@ -11,85 +11,74 @@ use App\User;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    
-    protected $key = '^fg?4xtyDXcjb5c__aXWb$J?2wn#9jBB4Wbc68d4YUDsB*ZuQ$p4b!rj';
+	use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function error($code, $message)
-    {
-        $json = ['message' => $message];
-        $json = json_encode($json);
-        return  response($json, $code)->header('Access-Control-Allow-Origin', '*');
-    }
+	protected $key = '^fg?4xtyDXcjb5c__aXWb$J?2wn#9jBB4Wbc68d4YUDsB*ZuQ$p4b!rj';
 
-    protected function success($message, $data = [])
-    {
-    	$json = ['message' => $message, 'data' => $data];
-        $json = json_encode($json);
-        return  response($json, 200)->withHeaders([
-                'Access-Control-Allow-Origin' => '*',
-                'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-          
-            ]);
+	protected function error($code, $message)
+	{
+		$json = ['message' => $message];
+		$json = json_encode($json);
+		return  response($json, $code)->header('Access-Control-Allow-Origin', '*');
+	}
 
-    }
+	protected function success($message, $data = [])
+	{
+		$json = ['message' => $message, 'data' => $data];
+		$json = json_encode($json);
+		return  response($json, 200)->withHeaders([
+			'Access-Control-Allow-Origin' => '*',
+			'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+		]);
+	}
+	protected function getOneHeader($header)
+	{
+		$headers = getallheaders();
+		if(isset($headers[$header]))
+		{
+			$header = $headers[$header];
+			return $header;
+		}
+		return null;	
+	}
 
-    protected function checkLogin($email, $password)
-    {
-        $userSave = User::where('email', $email)->first();
+	protected function checkLogin()
+	{
+		$userData = $this->getUserData();
+		if(is_null($userData))
+		{
+			return false;
+		}
+		$userSave = User::where('email', $userData->email)->first();
+		
+		if(!is_null($userSave) && $userSave->password == $userData->password)
+		{
+			return true;
+		}
+		return false;
+	}
 
-        $emailSave = $userSave->email;
-        $passwordSave = $userSave->password;
+	private function getToken()
+	{
+		$token = $this->getOneHeader("Authorization");
+		if(is_null($token))
+		{
+			return $this->error(400, "Primero logeate");
+		}
+		return $token;
+	}
 
-        if($emailSave == $email && $passwordSave == $password)
-        {
-            return true;
-        }
-        return false;
-    }
-
- //    protected function userLogged()
-	// {
-	// 	if ($this->isUserLogged) 
-	// 	{
-	// 		$userLogged = User::where('email', $userSave->email )->first();
-	// 	}
-	// 	return $userLogged;
-	// }
-
-	
-
-	// protected function isUserLogged()
- //    {
- //        $headers = getallheaders();
-
- //        if (!isset($headers['Authorization'])) 
-	//     {
-	//         return false;
-	//     }
-
-	//     $token = $headers['Authorization'];
-
-	//     $key = $this->key;
-	    
-	//     try 
-	//     {
-	//         $tokenDecoded = JWT::decode($token, $key, array('HS256')); 
-	//         $userLogged = User::where('email', $userSave->email )->first();
-	        
-
-	//         if (is_null($userLogged) or $userLogged->password != $tokenDecoded['password'])
-	// 	    {
-	// 	      	return false;
-	// 	    }
-	//     } 
-	//     catch (Exception $e) 
-	//     {	
-	//         return false; 
-	//     }
-	//     return true;
- //    }
-
-    
+	protected function getUserData()
+	{
+		try 
+		{
+			$userData = JWT::decode($this->getToken(), $this->key, array('HS256'));
+			return $userData;      
+		} 
+		catch (\Exception $e) 
+		{
+			return null;
+		}	
+	}
 }   
 

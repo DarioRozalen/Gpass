@@ -20,36 +20,58 @@ class RegisterController extends Controller
         $email = $_POST['email'];
         $password = $_POST['password'];
 
+        if($this->checkPassword($password))
+        {
+            return $this->error(400,'La contraseña tiene que ser superior a 8 carecteres');
+        }
+        if($this->checkEmail($email))
+        {
+            return $this->error(400,'El email no es valido');
+        }
+        if($this->checkUserExist($email))
+        {
+            return $this->error(400,'El usuario ya existe');
+        }
+        
         if (!empty($user) && !empty($email) && !empty($password))
         {
-            if(strlen($password) >= 8)
-            {
-                try
-                {
-                    $users = new User();
-                    $users->name = $user;
-                    $users->password = $password;
-                    $users->email = $email;
-
-                    $users->save();
-                }
-                catch(Exception $e)
-                {
-                    return $this->error(2, $e->getMessage());
-                }
-
-                return $this->error(200, 'Usuario registrado');
-            }
-            else
-            {
-                return $this->error(401, 'The password must be bigger than 8 characters');
-            }
+            $users = new User();
+            $users->name = $user;
+            $users->password = $password;
+            $users->email = $email;
+            $users->save();
+            return $this->success('Usuario registrado',"");                 
         }
         else
         {
-            return $this->error(401, 'No puede haber campos vacios');
+            return $this->error(400,'No puede haber campos vacios');
+        }    
+    }
+    public function checkPassword($password)
+    {
+        if(strlen($password) < 8)
+        {
+            return true;
         }
-    }  
+        return false;
+    }
+    public function checkEmail($email)
+    {
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            return true;
+        }
+        return false;
+    }
+    public function checkUserExist($email)
+    {
+        $userData = User::where('email',$email)->first();
+        if(!is_null($userData))
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 // if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 

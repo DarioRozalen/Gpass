@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \Firebase\JWT\JWT;
-use App\User;//Para poder acceder al odelo de User
+use App\User;
 
 class LoginController extends Controller
 {
@@ -12,32 +12,35 @@ class LoginController extends Controller
     {
         if (!isset($_POST['email']) or !isset($_POST['password'])) 
         {
-            return $this->error(1, 'No puede haber campos vacíos');
+            return $this->error(400, 'No puede haber campos vacíos');
         }
-
-    	$email = $_POST['email'];
+        $email = $_POST['email'];
         $password = $_POST['password'];
-        $key = $this->key;
-
-        if (self::checkLogin($email, $password))
+        if ($this->checkIsRegister($email,$password))
         {
             $userSave = User::where('email', $email)->first();
-
-            $array = $arrayName = array
-            (
+            $userData = array(
                 'id' => $userSave->id,
-                'email' => $email,
-                'password' => $password,
-                'name' => $userSave->name
+                'name' => $userSave->name,
+                'email' => $userSave->email,
+                'password' => $userSave->password
             );
-
-            $jwt = JWT::encode($array, $key);
-
-            return response($jwt)->header('Access-Control-Allow-Origin', '*');
+            $token = JWT::encode($userData, $this->key);
+            return $this->success('Usuario Logeado', $token);
         }
         else
         {
-            return response("Los datos no son correctos", 400)->header('Access-Control-Allow-Origin', '*');
+            return $this->error(400, 'Los datos no son correctos');
         }
+    }
+    public function checkIsRegister($email,$password)
+    {   
+        $userSave = User::where('email', $email)->first();
+        
+        if(!is_null($userSave) && $userSave->password == $password)
+        {
+            return true;
+        }
+        return false;
     }
 }
