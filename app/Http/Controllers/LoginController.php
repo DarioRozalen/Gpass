@@ -16,6 +16,7 @@ class LoginController extends Controller
         }
         $email = $_POST['email'];
         $password = $_POST['password'];
+        
         if ($this->checkIsRegister($email,$password))
         {
             $userSave = User::where('email', $email)->first();

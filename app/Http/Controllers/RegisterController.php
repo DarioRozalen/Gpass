@@ -73,8 +73,3 @@ class RegisterController extends Controller
         return false;
     }
 }
-
-// if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
-//             {
-//                 return $this->error(401, 'No puede haber espacios en los campos');
-//             }

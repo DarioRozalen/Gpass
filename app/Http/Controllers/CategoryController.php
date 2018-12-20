@@ -8,7 +8,7 @@ use \Firebase\JWT\JWT;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index()//Muestra todas las categorias creadas por un usuario
     {
         if ($this->checkLogin()) 
         { 
@@ -22,10 +22,9 @@ class CategoryController extends Controller
         }    
     }
 
-    
-    public function create()
+    public function create()//No lo usamos
     {
-        
+
     }
 
     
@@ -77,7 +76,7 @@ class CategoryController extends Controller
     
     public function edit(Category $category)
     {
-        
+
     }
 
     

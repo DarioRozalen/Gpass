@@ -24,6 +24,4 @@ class User extends Model
     {
         return $this->hasMany('App\Password');
     }
-
-
 }
